@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>The Fact Spin — DYAP Youth Misinformation Game</title>
+    <meta name="description" content="An interactive youth misinformation and fact-checking game featuring spin wheel media challenges, investigative forensic toolkits, and SIFT verification." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg-primary: #030712;
+        --bg-panel: rgba(15, 23, 42, 0.92);
+        --bg-card: #090d16;
+        --border-color: rgba(51, 65, 85, 0.8);
+        --text-primary: #f8fafc;
+        --text-muted: #94a3b8;
+        --accent-blue: #3b82f6;
+        --accent-purple: #8b5cf6;
+        --accent-amber: #f59e0b;
+        --accent-emerald: #10b981;
+        --accent-rose: #f43f5e;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+      body {
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        user-select: none;
+        -webkit-user-select: none;
+        overflow-x: hidden;
+      }
+      header.app-header {
+        width: 100%;
+        border-bottom: 1px solid var(--border-color);
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(12px);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .header-inner {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .brand { display: flex; align-items: center; gap: 12px; }
+      .brand-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .brand-text h1 {
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .brand-tag {
+        font-size: 10px;
+        font-family: monospace;
+        padding: 2px 7px;
+        border-radius: 9999px;
+        background: rgba(59, 130, 246, 0.15);
+        color: #93c5fd;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+      }
+      .header-stats { display: flex; align-items: center; gap: 14px; }
+      .stat-item { text-align: right; }
+      .stat-title { font-size: 10px; font-family: monospace; text-transform: uppercase; color: var(--text-muted); }
+      .stat-number { font-size: 15px; font-weight: 800; font-family: monospace; color: var(--accent-amber); }
+      .stat-streak { color: var(--accent-emerald); }
+      .btn-icon {
+        background: #1e293b;
+        border: 1px solid var(--border-color);
+        color: #cbd5e1;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      .btn-download-top {
+        background: linear-gradient(135deg, #059669, #0d9488);
+        border: 1px solid rgba(52, 211, 153, 0.4);
+        color: #fff;
+        padding: 7px 14px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      main.game-container {
+        width: 100%;
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 24px 16px 48px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .panel-card {
+        background: var(--bg-panel);
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+        padding: 28px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(12px);
+      }
+      .intro-content { text-align: center; }
+      .intro-logo { font-size: 54px; margin-bottom: 12px; display: inline-block; }
+      .intro-title { font-size: 28px; font-weight: 800; margin-bottom: 6px; color: #fff; }
+      .intro-subtitle { font-size: 13px; font-family: monospace; color: #93c5fd; margin-bottom: 14px; }
+      .intro-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; max-width: 520px; margin: 0 auto 24px; }
+      .pillars-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 28px; text-align: left; }
+      .pillar-item { background: rgba(3, 7, 18, 0.6); border: 1px solid rgba(51, 65, 85, 0.6); border-radius: 14px; padding: 14px; }
+      .pillar-item span.emoji { font-size: 20px; display: block; margin-bottom: 6px; }
+      .pillar-item h4 { font-size: 12px; font-weight: 700; color: #f1f5f9; margin-bottom: 4px; }
+      .pillar-item p { font-size: 11px; color: #94a3b8; line-height: 1.4; }
+      .btn-primary {
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        border: none;
+        color: #fff;
+        padding: 14px 32px;
+        font-size: 15px;
+        font-weight: 800;
+        border-radius: 14px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .wheel-wrapper { text-align: center; }
+      .wheel-indicator-text { font-size: 12px; font-family: monospace; text-transform: uppercase; color: #60a5fa; font-weight: 700; margin-bottom: 10px; }
+      .wheel-canvas-container { position: relative; width: 320px; height: 320px; margin: 14px auto 20px; }
+      .wheel-needle {
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 14px solid transparent;
+        border-right: 14px solid transparent;
+        border-top: 24px solid var(--accent-amber);
+        z-index: 10;
+      }
+      #wheel-canvas { width: 100%; height: 100%; border-radius: 50%; border: 4px solid #1e293b; background: #020617; }
+      .wheel-result-banner { min-height: 30px; font-size: 18px; font-weight: 800; color: var(--accent-amber); margin-bottom: 12px; }
+      .social-card { border: 1px solid var(--border-color); border-radius: 20px; background: var(--bg-card); overflow: hidden; margin-bottom: 16px; }
+      .card-top { padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(51, 65, 85, 0.6); background: rgba(15, 23, 42, 0.4); }
+      .author-block { display: flex; align-items: center; gap: 12px; }
+      .avatar { width: 40px; height: 40px; border-radius: 50%; background: #1e293b; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+      .author-meta h4 { font-size: 13.5px; font-weight: 700; color: #fff; }
+      .author-meta p { font-size: 11px; color: var(--text-muted); font-family: monospace; }
+      .card-banner { min-height: 190px; padding: 20px; display: flex; flex-direction: column; justify-content: flex-end; position: relative; border-bottom: 1px solid rgba(51, 65, 85, 0.6); }
+      .banner-tag { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-family: monospace; font-weight: 700; background: rgba(0, 0, 0, 0.65); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.4); width: fit-content; margin-bottom: 8px; }
+      .banner-headline { font-size: 17px; font-weight: 800; line-height: 1.35; color: #fff; }
+      .card-content { padding: 16px; font-size: 14px; line-height: 1.6; color: #cbd5e1; }
+      .card-stats { display: flex; gap: 20px; padding-top: 12px; margin-top: 12px; border-top: 1px solid rgba(51, 65, 85, 0.5); font-size: 12px; font-family: monospace; color: var(--text-muted); }
+      .toolkit-box { background: rgba(3, 7, 18, 0.7); border: 1px solid var(--border-color); border-radius: 18px; padding: 16px; margin-bottom: 18px; }
+      .toolkit-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; font-size: 12px; font-weight: 700; }
+      .clue-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .btn-tool { background: #1e293b; border: 1px solid var(--border-color); color: #94a3b8; padding: 10px 8px; border-radius: 12px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+      .btn-tool.active { background: rgba(37, 99, 235, 0.25); border-color: #3b82f6; color: #60a5fa; }
+      .clue-reveal-box { margin-top: 12px; padding: 14px; background: #0f172a; border: 1px solid #3b82f6; border-radius: 12px; font-size: 12.5px; line-height: 1.5; color: #e2e8f0; }
+      .verdict-prompt { text-align: center; font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; }
+      .verdict-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+      .btn-verdict { padding: 14px 8px; border-radius: 14px; font-weight: 800; font-size: 12.5px; cursor: pointer; border: 1px solid transparent; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+      .btn-real { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: #34d399; }
+      .btn-spun { background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.4); color: #fbbf24; }
+      .btn-fake { background: rgba(244, 63, 94, 0.15); border-color: rgba(244, 63, 94, 0.4); color: #fb7185; }
+      .debrief-card { padding: 18px; border-radius: 16px; margin-top: 14px; font-size: 13.5px; line-height: 1.55; }
+      .debrief-correct { background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #a7f3d0; }
+      .debrief-wrong { background: rgba(244, 63, 94, 0.15); border: 1px solid #f43f5e; color: #fecdd3; }
+      .sift-card { margin-top: 12px; padding: 12px; background: rgba(3, 7, 18, 0.7); border-radius: 10px; font-size: 12px; color: #fef08a; border-left: 3px solid #f59e0b; }
+      .btn-next-action { width: 100%; margin-top: 14px; padding: 14px; background: linear-gradient(135deg, #2563eb, #4f46e5); border: none; border-radius: 14px; color: #fff; font-weight: 800; font-size: 14px; cursor: pointer; }
+      .gameover-badge { font-size: 56px; margin-bottom: 12px; }
+      .gameover-title { font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+      .stats-summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 440px; margin: 20px auto 28px; }
+      .summary-tile { background: #090d16; border: 1px solid var(--border-color); padding: 14px; border-radius: 14px; }
+      .tile-label { font-size: 10px; font-family: monospace; color: var(--text-muted); }
+      .tile-val { font-size: 22px; font-weight: 800; font-family: monospace; }
+      @media (max-width: 600px) {
+        .pillars-grid { grid-template-columns: 1fr; }
+        .header-stats { gap: 8px; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="header-inner">
+        <div class="brand">
+          <div class="brand-icon">🎡</div>
+          <div class="brand-text">
+            <h1>The Fact Spin <span class="brand-tag">DYAP Youth Game</span></h1>
+          </div>
+        </div>
+
+        <div class="header-stats">
+          <div class="stat-item">
+            <div class="stat-title">Round</div>
+            <div class="stat-number" id="hud-round" style="color: #60a5fa;">1/6</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-title">Score</div>
+            <div class="stat-number" id="hud-score">0</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-title">Streak</div>
+            <div class="stat-number stat-streak" id="hud-streak">0x</div>
+          </div>
+
+          <button class="btn-icon" id="btn-toggle-audio" title="Toggle Sound">🔊</button>
+          <button class="btn-download-top" id="btn-download-html" title="Save this game as a standalone HTML file">
+            <span>📥</span>
+            <span>Download .HTML</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="game-container">
+      <section class="panel-card" id="screen-intro">
+        <div class="intro-content">
+          <div class="intro-logo">🎡</div>
+          <h2 class="intro-title">The Fact Spin</h2>
+          <p class="intro-subtitle">DYAP Youth Misinformation Inoculation Game</p>
+          <p class="intro-desc">
+            Social media feeds are flooded with viral AI deepfakes, clickbait outrage headlines, fabricated health cures, and phishing traps. Can you spot what's real and what's spun?
+          </p>
+
+          <div class="pillars-grid">
+            <div class="pillar-item">
+              <span class="emoji">🎡</span>
+              <h4>Spin The Wheel</h4>
+              <p>Land on Deepfakes, Outrage Bait, Health Science, or Scams.</p>
+            </div>
+            <div class="pillar-item">
+              <span class="emoji">🔍</span>
+              <h4>Forensic Clues</h4>
+              <p>Inspect author credibility, image artifacts, and emotional triggers.</p>
+            </div>
+            <div class="pillar-item">
+              <span class="emoji">🛡️</span>
+              <h4>SIFT Framework</h4>
+              <p>Master the 4-step fact-checking technique used by journalists.</p>
+            </div>
+          </div>
+
+          <button class="btn-primary" id="btn-start-game">
+            <span>START INVESTIGATION</span>
+            <span>→</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="panel-card" id="screen-spin" style="display: none;">
+        <div class="wheel-wrapper">
+          <div class="wheel-indicator-text">Spin to draw your next scenario</div>
+          <div class="wheel-canvas-container">
+            <div class="wheel-needle"></div>
+            <canvas id="wheel-canvas" width="320" height="320"></canvas>
+          </div>
+          <div class="wheel-result-banner" id="spin-result-alert"></div>
+          <button class="btn-primary" id="btn-spin">
+            <span>🎡 SPIN THE WHEEL</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="panel-card" id="screen-card" style="display: none;">
+        <div class="social-card">
+          <div class="card-top">
+            <div class="author-block">
+              <div class="avatar" id="card-avatar">⚡</div>
+              <div class="author-meta">
+                <h4 id="card-author-name">ViralNews</h4>
+                <p id="card-author-handle">@handle • 840K followers</p>
+              </div>
+            </div>
+            <span class="brand-tag" id="card-platform-tag">Simulated Post</span>
+          </div>
+
+          <div class="card-banner" id="card-banner-box">
+            <span class="banner-tag" id="card-media-type">AI VIDEO CLIP</span>
+            <h3 class="banner-headline" id="card-headline">Post Headline</h3>
+          </div>
+
+          <div class="card-content">
+            <p id="card-content">Post content text...</p>
+            <div class="card-stats">
+              <span>❤️ <span id="card-likes">342K</span></span>
+              <span>💬 <span id="card-comments">14K</span></span>
+              <span>🔄 <span id="card-shares">118K</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="toolkit-box">
+          <div class="toolkit-header">
+            <span>🔍 DYAP FORENSIC CLUES TOOLKIT</span>
+            <span style="font-family: monospace; font-size: 11px; color: #94a3b8;">Click to reveal</span>
+          </div>
+
+          <div class="clue-buttons">
+            <button class="btn-tool" id="tool-source">
+              <span>🛡️</span>
+              <span>Inspect Source</span>
+            </button>
+            <button class="btn-tool" id="tool-media">
+              <span>🖼️</span>
+              <span>Media Forensics</span>
+            </button>
+            <button class="btn-tool" id="tool-tone">
+              <span>🧠</span>
+              <span>Emotional Tone</span>
+            </button>
+          </div>
+
+          <div class="clue-reveal-box" id="clue-box" style="display: none;"></div>
+        </div>
+
+        <div id="verdict-decisions-box">
+          <div class="verdict-prompt">What is your verdict on this post?</div>
+          <div class="verdict-grid">
+            <button class="btn-verdict btn-real" id="btn-verdict-real">
+              <span style="font-size: 18px;">✅</span>
+              <span>REAL FACT</span>
+            </button>
+            <button class="btn-verdict btn-spun" id="btn-verdict-spun">
+              <span style="font-size: 18px;">⚠️</span>
+              <span>SPUN / MISLEADING</span>
+            </button>
+            <button class="btn-verdict btn-fake" id="btn-verdict-fake">
+              <span style="font-size: 18px;">❌</span>
+              <span>FAKE / DEEPFAKE</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="verdict-debrief-box" style="display: none;">
+          <div class="debrief-card" id="debrief-card">
+            <div style="font-weight: 800; font-size: 15px; margin-bottom: 6px;" id="debrief-status"></div>
+            <p id="debrief-explanation"></p>
+            <div class="sift-card" id="debrief-sift"></div>
+          </div>
+
+          <button class="btn-next-action" id="btn-next-scenario">
+            <span>NEXT CHALLENGE →</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="panel-card" id="screen-gameover" style="display: none; text-align: center;">
+        <div class="gameover-badge" id="final-badge">🏆</div>
+        <h2 class="gameover-title" id="final-rank">DYAP Fact Detective</h2>
+        <p style="font-size: 13px; color: #94a3b8; font-family: monospace;">
+          Youth Misinformation Inoculation Completed
+        </p>
+
+        <div class="stats-summary-grid">
+          <div class="summary-tile">
+            <div class="tile-label">FINAL SCORE</div>
+            <div class="tile-val" style="color: var(--accent-amber);" id="final-score">0</div>
+          </div>
+          <div class="summary-tile">
+            <div class="tile-label">ACCURACY</div>
+            <div class="tile-val" style="color: var(--accent-emerald);" id="final-acc">0%</div>
+          </div>
+          <div class="summary-tile">
+            <div class="tile-label">SOLVED</div>
+            <div class="tile-val" style="color: #60a5fa;" id="final-solved">0/6</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <button class="btn-primary" id="btn-replay">
+            <span>🔄 PLAY AGAIN</span>
+          </button>
+          <button class="btn-download-top" id="btn-download-summary" style="padding: 14px 24px; font-size: 14px;">
+            <span>📥 Download Standalone .HTML</span>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
